@@ -1,0 +1,62 @@
+	
+<h2>{{library.name}}</h2>
+<h5 class="lastUpdated">Last updated {{fullDate library.lastUpdated}} / {{library.udfCount}} Released UDF(s)</h5>
+
+{{#if showPagination}}
+	<p>
+	{{#if showPrevious}}
+		<a href="/library/{{library.name}}/start/{{startPrevious}}">Previous</a>
+	{{else}}
+		Previous
+	{{/if}}
+	/
+	{{#if showNext}}
+		<a href="/library/{{library.name}}/start/{{startNext}}">Next</a>
+	{{else}}
+		Next
+	{{/if}}
+	</p>
+{{/if}}
+
+
+{{#each udfs}}
+
+	
+<div class="function" id="function{{this.id}}">
+	<a href="/udf/{{this.name}}" class="funcName">{{this.name}}</a> <br/>
+	<p>
+	{{this.shortDescription}} | <strong>Requires:</strong> {{this.cfVersion}}
+	</p> 
+		
+		<ul class="options">
+			<li><a href="/udfdownload/{{udf.id}}">Download UDF</a> | </li>
+			<li><a href="/udf/{{this.name}}#examples">Examples</a> |</li>
+			<li><a href="/udf/{{this.name}}">Details</a></li>	
+		</ul>
+		<div class="udfCode">
+			<a href="" class="viewUDF">View UDF</a>
+			<div class="code">
+				<code>
+				<img src="/images/ajax-loader.gif" />Loading...
+				</code>
+			</div>
+		</div>
+</div>
+
+{{/each}}
+
+{{#if showPagination}}
+	<p>
+	{{#if showPrevious}}
+		<a href="/library/{{library.name}}/start/{{startPrevious}}">Previous</a>
+	{{else}}
+		Previous
+	{{/if}}
+	/
+	{{#if showNext}}
+		<a href="/library/{{library.name}}/start/{{startNext}}">Next</a>
+	{{else}}
+		Next
+	{{/if}}
+	</p>
+{{/if}}

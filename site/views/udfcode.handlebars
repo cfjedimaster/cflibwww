@@ -1,0 +1,7 @@
+{{#if plain}}
+{{udf.javaDoc}}
+{{{udf.code}}}
+{{else}}
+<pre><code class="language-{{#if udf.tagBased}}markup{{else}}javascript{{/if}}">{{udf.javaDoc}}
+{{udf.code}}</code></pre>
+{{/if}}

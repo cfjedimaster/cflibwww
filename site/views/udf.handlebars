@@ -1,0 +1,77 @@
+
+<h2>{{udf.name}}{{udf.argString}}</h2>
+<h5 class="lastUpdated">Last updated {{fullDate udf.lastUpdated}}</h5>
+
+<div class="author">
+	<a href="/udfdownload/{{udf.name}}" class="downloadUDF">Download UDF</a>
+	<h3><span>author</span></h3>
+	<p>
+	<img src="{{gravatarURL udf.authorEmail}}" title="#{{udf.author}}" class="img-left gravatar" />
+	<span class="name"><!--<a href="/author/{{hash udf.authorEmail}}">-->{{udf.author}}<!--</a>--></span> <br/>
+	</p>	
+</div>
+<p class="description">
+	<strong>Version:</strong> {{udf.version}} |  
+	<strong>Requires:</strong> {{udf.cfVersion}} | 
+	<strong>Library:</strong> <a href="/library/{{library.name}}">{{library.name}}</a>
+</p>
+
+<div class="udfDetails">	
+<p>
+	<strong>Description:</strong> <br/>
+	{{udf.description}}
+</p>
+<p>
+	<strong>Return Values:</strong> <br/>
+	{{udf.returnValue}}						
+</p>
+
+<a name="examples"></a><p><strong>Example:</strong></p>
+
+<pre><code class="language-markup">{{udf.example}}</code></pre>
+
+<p><strong>Parameters:</strong></p>
+
+{{#if showArgs}}
+	<table id="paramsTable" cellpadding="0" cellspacing="0">
+		<tr>
+			<th>Name</th>
+			<th>Description</th>
+			<th>Required</th>
+		</tr>
+		{{#each udf.args}}
+			<tr>
+				<td>{{this.NAME}}</td>
+				<td>{{this.DESC}}</td>
+				<td>{{yesNoFormat this.REQ}}</td>
+			</tr>
+		{{/each}}
+	</table>
+{{else}}
+<p>No arguments.</p>
+{{/if}}
+
+<!--
+		<tr <cfif x mod 2 is 0>class="even"</cfif>>
+-->
+
+<p><strong>Full UDF Source: </strong></p>
+<pre><code class="language-{{#if udf.tagBased}}markup{{else}}javascript{{/if}}">{{udf.javaDoc}}
+{{udf.code}}</code></pre>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'cflib';
+    var disqus_identifier = '{{udf.oldId}}';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+</div>
