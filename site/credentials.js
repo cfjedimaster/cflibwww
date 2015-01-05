@@ -1,10 +1,5 @@
 module.exports = {
-	mongo: {
-		development: {
-			connectionString:'mongodb://localhost/cflib'
-		},
-		production: {
-			connectionString:''
-		}
-	}
+	adminusername:'admin',
+	adminpassword:'xomax9099',
+	cookieSecret:'jhjhfg9843908342890'
 }

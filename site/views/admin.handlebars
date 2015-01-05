@@ -1,0 +1,41 @@
+
+<form method="post">
+
+<p>
+<label for="keyword">Keyword</label>
+<input type="text" name="keyword" id="keyword" value="{{keyword}}"><br/>
+<label for="status">Status</label>
+<select name="status" id="status">
+<option value="">--</option>
+<option value="released" {{selected "released" status}}>Released</option>
+<option value="queue" {{selected "queue" status}}>Queue</option>
+</select><br/><br/>
+<input type="submit" value="Filter">
+</p>
+
+</form>
+
+{{#if results}}
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Released</th>
+			</tr>
+		</thead>
+		<tbody>
+	{{#each results}}
+			<tr>
+				<td><a href="/adminedit/{{this.id}}" >{{this.name}}</a></td>
+				<td>{{yesNoFormat this.released}}</td>
+			</tr>
+	{{/each}}
+		</tbody>
+	</table>
+{{/if}}
+
+<br/>
+
+<p>
+<a href="/adminedit/new">New UDF</a>
+</p>

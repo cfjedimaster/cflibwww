@@ -26,10 +26,14 @@ librarySchema.methods.getUDFs = function(page, cb) {
 
 librarySchema.statics.findByName = function (name, cb) {
   this.findOne({ name: new RegExp(name, 'i') }, function(err, lib) {
-	  getUDFCount(lib, function(err, count) {
-		  lib.udfCount = count;
-		  cb(null, lib);
-	  });
+  	  if(!lib) {
+	  	cb("Invalid lib");
+	  } else {
+		  getUDFCount(lib, function(err, count) {
+			  lib.udfCount = count;
+			  cb(null, lib);
+		  });
+	  }
   });
 };
 

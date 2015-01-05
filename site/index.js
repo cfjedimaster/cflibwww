@@ -2,9 +2,11 @@ var express = require('express');
 var app = express();
 app.set('port', process.env.PORT || 3000);
 
+app.use(require('body-parser')());
+
 var crypto = require('crypto');
 
-//var credentials = require('./credentials.js');
+var credentials = require('./credentials.js');
 
 var mongoose = require('mongoose');
 var opts = {
@@ -46,8 +48,8 @@ mongoose.connect(mongourl, opts);
 var moment = require('moment');
 
 var RSS = require('rss');
-
 app.set('rssXML', '');
+
 
 var Library = require('./models/library.js');
 var UDF = require('./models/udf.js');
@@ -68,6 +70,7 @@ var handlebars = require('express-handlebars').create({
 			return moment(d).fromNow();
 		},
 		gravatarURL: function(e) {
+			if(!e) e = "";
 			//http://nodeexamples.com/2013/09/04/creating-an-md5-hash-to-get-profile-images-from-gravatar/
 			var s = "http://www.gravatar.com/avatar/";
 			e = e.toLowerCase().trim();
@@ -82,6 +85,16 @@ var handlebars = require('express-handlebars').create({
 			var hash = crypto.createHash("md5");
 			hash.update(e);
 			return hash.digest("hex");
+		},
+		selected:function(option,value) {
+			if(option == value) {
+				return ' selected';
+			} else {
+				return '';
+			}
+		},
+		stringify:function(v) {
+			return JSON.stringify(v);
 		},
 		truncate:function(s) {
 			if(s.length < 17) return s;
@@ -98,9 +111,14 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(__dirname + '/public'));
 
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('express-session')());
+
+//Load admin routes
+var admin = require('./routes/admin');
+
 //Get last 5
 app.use(function(req, res, next) {
-	console.log('getting 5');
 	UDF.getLatest(function(latestUDFs) {
 		res.locals.latestUDFs = latestUDFs;
 		next();
@@ -130,8 +148,6 @@ app.get(['/library/:name','/library/:name/start/:start'], function(req, res) {
 		}
 	}
 	
-	console.log('loading '+req.params.name + ' starting at '+start + ' page '+page);
-
 	// TODO: findByName should fetch udfs too to make the calling code here simpler. 
 	Library.findByName(req.params.name, function(err, library) {		
 		if(!library) res.redirect('/');
@@ -171,6 +187,26 @@ app.get(['/library/:name','/library/:name/start/:start'], function(req, res) {
 			});
 		}
 	});
+});
+
+app.get('/login', function(req, res) {
+    if(req.session.error) {
+        res.locals.error = req.session.error;
+        delete req.session.error;
+    }
+    res.render('login',{title:"Admin Login"});		
+});
+
+app.post('/login', function(req, res) {
+	if(authenticate(req.param('username'), req.param('password'))) {
+		req.session.regenerate(function() {
+			req.session.loggedin=true;
+			res.redirect('/admin');
+		});
+	} else {
+		req.session.error = 'Invalid login.';        
+		res.redirect('/login');
+	}
 });
 
 app.get('/udf-code/:id', function(req, res) {
@@ -218,11 +254,9 @@ app.get('/submit', function(req, res) {
 });
 
 app.get('/rss', function(req, res) {
-	console.log('RSS');
 	//Do we have a cache for xml?
 	if(app.get('rssXML') != '') {
 		console.log('from cache in index.js ');
-		console.log(app.get('rssXML'));
 		res.set('Content-Type','application/rss+xml');
 		res.send(app.get('rssXML'));
 	} else {
@@ -255,6 +289,21 @@ app.get('/rss', function(req, res) {
 	}
 });
 
+/* admin block */
+app.all('/admin', secure, admin.adminindex);
+app.all('/adminedit/:id', secure, admin.editudf);
+
+function authenticate(username, password) {
+	return (username === credentials['adminusername'] && password === credentials['adminpassword']);
+}
+
+function secure(req, res, next) {
+    if(1 || req.session.loggedin) {
+        next();   
+    } else {
+        res.redirect('/login');
+    }
+}
 // custom 404 page
 app.use(function(req, res){ 
 	res.status(404);

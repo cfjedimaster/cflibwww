@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+//TODO: Consider removing warnings, not being used in front end
 var udfSchema = mongoose.Schema({ 
 	library_id: mongoose.Schema.Types.ObjectId,
 	name: String,
@@ -63,6 +64,8 @@ UDF.find(function(err, udfs) {
 		
 UDF.getLatest = function(cb, total) {
 	if(!total) total=5;
+	//TODO: fixme
+	console.log("FIX ME I DONT FILTER");
 	//use cached version
 	if(locals["latestUDFs"+total]) {
 		cb(locals["latestUDFs"+total]);
@@ -72,6 +75,24 @@ UDF.getLatest = function(cb, total) {
 			cb(results);
 		});
 	}
+};
+
+//non public search
+UDF.search = function(keyword,status,cb) {
+	var filters = {};
+	if(keyword != '') filters["lname"] = new RegExp(keyword);
+	if(status != '') {
+		if(status === 'released') filters.released = true;
+		if(status === 'queue') {
+			filters.released = false;
+			filters.rejected = false;	
+		}
+	}
+	console.dir(filters);
+	UDF.find(filters).sort({lname:1}).exec(function(err, results) {
+		console.dir(results.length);
+		cb(err, results);
+	});
 };
 
 module.exports = UDF;

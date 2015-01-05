@@ -1,0 +1,140 @@
+<style>
+#editForm input {
+	width: 500px;
+}
+#editForm input.short {
+	width: 100px;
+}
+#editForm textarea {
+	width: 600px;
+}
+</style>
+
+<h1>Edit {{udf.name}}</h1>
+
+<form method="post">
+<input type="hidden" name="udfid" value="{{udf.id}}">
+<table id="editForm">
+<tr>
+	<td><b>Name:</b></td>
+	<td><input type="text" name="name" value="{{udf.name}}"></td>
+</tr>
+<tr>
+	<td><b>Last Updated:</b></td>
+	<td>{{fullDate udf.lastUpdated}}</td>
+</tr>
+<tr>
+	<td><b>Required CF Version:</b></td>
+	<td>
+	<input type="text" name="cfversion" value="{{udf.cfVersion}}">
+	</td>
+</tr>
+<tr>
+	<td><b>Version:</b></td>
+	<td><input type="text" name="version" value="{{udf.version}}" class="short"></td>
+</tr>
+<tr>
+	<td><b>Tag Based:</b></td>
+	<td><input type="checkbox" name="tagbased" {{#if udf.tagBased}}checked{{/if}} value="1"></td>
+</tr>
+<tr>
+	<td><b>Author Name and Email:</b></td>
+	<td><input type="text" name="author" value="{{udf.author}}"> 
+	<input type="text" name="authoremail" value="{{udf.authorEmail}}"></td>
+</tr>
+<tr>
+	<td><b>Library:</b></td>
+	<td>
+	<select name="libraryid">
+	{{#each libraries}}
+		<option value="{{this.id}}" {{selected this.id ../udf.library_id}}>{{this.name}}</option>
+	{{/each}}
+	</select>
+	</td>
+</tr>
+<tr>
+	<td colspan="2"><b>Short Description:</b><br/>
+	<textarea name="shortdescription" cols="50" rows="3">{{udf.shortDescription}}</textarea>
+	</td>
+</tr>
+<tr>
+	<td colspan="2"><b>Description:</b><br/>
+	<textarea name="description" cols="50" rows="6">{{udf.description}}</textarea>
+	</td>
+</tr>
+<tr>
+	<td colspan="2"><b>Arguments:</b><br/>
+	<!--
+	<TABLE WIDTH="100%">
+	<TR>
+		<TD><B>Arg Name</B></TD>
+		<TD><B>Desc</B></TD>
+		<TD><B>Required</B></TD>
+	</TR>
+	</TABLE>
+	-->
+	<textarea name="args" cols="50" rows="6">{{stringify udf.args}}</textarea>
+	</td>
+</tr>
+<tr>
+	<td><b>Return Value:</b></td>
+	<td><input type="text" name="returnvalue" value="{{udf.returnValue}}"></td>
+</tr>
+<tr>
+	<td colspan="2"><b>Example:</b><br/>
+	<textarea name="example" cols="50" rows="6">{{udf.example}}</textarea>
+	</td>
+</tr>
+<!--
+<tr>
+	<td colspan="2"><b>Example Other:</b><br/>
+	<textarea name="exampleother" cols="50" rows="3">#exampleother#</textarea>
+	</td>
+</tr>
+-->
+<tr>
+    <td colspan="2"><b>Warnings:</b><br/>
+    <textarea name="warnings" cols="50" rows="3">{{udf.warnings}}</textarea>
+    </td>
+</tr>
+<tr>
+    <td colspan="2"><b>Header Comments:</b><br/>
+    <textarea name="headercomments" cols="50" rows="3">{{udf.headerComments}}</textarea>
+    </td>
+</tr>
+<tr>
+    <td colspan="2"><b>JavaDoc:</b><br/>
+    <textarea name="javadoc" cols="50" rows="20">{{udf.javaDoc}}</textarea>
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2"><b>Code:</b><br/>
+    <textarea name="code" cols="50" rows="20">{{udf.code}}</textarea>
+    </td>
+</tr>
+<tr>
+    <td><b>Released:</b></td>
+	<td>
+	<select name="released">
+	<option value="1" {{selected 1 udf.released}}>Yes</option>
+	<option value="0" {{selected 0 udf.released}}>No</option>
+    </select>
+	</td>
+</tr>
+<tr>
+    <td><b>Rejected:</b></td>
+    <td>
+    <select name="rejected">
+    <option value="1" {{selected 1 udf.rejected}}>Yes</option>
+    <option value="0" {{selected 0 udf.rejected}}>No</option>
+    </select>
+    </td>
+</tr>
+<tr>
+	<td><b>Rejection Reason:</b></td>
+	<td><input type="text" name="rejectionreason" value="{{udf.rejectionReason}}"></td>
+</tr>
+</table>
+<input type="submit" value="Save UDF">
+</form>
