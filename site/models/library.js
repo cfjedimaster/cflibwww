@@ -8,6 +8,8 @@ var librarySchema = mongoose.Schema({
 	lastUpdated: Date
 });
 
+var locals = {};
+
 //Not using it, but it "feels" right as a method anyway
 //Hmm, you know... code dupe is bad
 /*
@@ -43,17 +45,27 @@ function getUDFCount(lib,cb) {
 
 //I not only load all libs, but all prefetch their numUDFs
 librarySchema.statics.getAll = function(cb) {
-	this.find().sort({name:1}).exec(function(err, libs) {
-		async.map(libs, getUDFCount, function(err, result) {
-			for(var i=0, len=libs.length; i<len; i++) {
-				libs[i].udfCount = result[i];	
-			}
-			cb(null,libs);
+	if(locals["libraryCache"]) {
+		cb(null, locals["libraryCache"]);
+	} else {
+		console.log('doing getall');
+		this.find().sort({name:1}).exec(function(err, libs) {
+			async.map(libs, getUDFCount, function(err, result) {
+				for(var i=0, len=libs.length; i<len; i++) {
+					libs[i].udfCount = result[i];	
+				}
+				locals["libraryCache"] = libs;
+				cb(null,libs);
+			});
 		});
-	});
+	}
 };
 
 var Library = mongoose.model('Library', librarySchema); 
+
+Library.clearCache = function() {
+	locals = {};
+};
 
 Library.find(function(err, libraries) {
 	

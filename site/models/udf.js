@@ -22,7 +22,8 @@ var udfSchema = mongoose.Schema({
 	rejectionReason:String,
 	cfVersion:String,
 	tagBased:Boolean,
-	oldId:Number
+	oldId:Number,
+	lname:String
 });
 
 var locals = {};
@@ -56,6 +57,10 @@ udfSchema.methods.getArgString = function() {
 
 var UDF = mongoose.model('UDF', udfSchema); 
 
+UDF.clearCache = function() {
+	locals = {};
+};
+
 UDF.find(function(err, udfs) {
 	
 	if(udfs.length) return;
@@ -64,13 +69,11 @@ UDF.find(function(err, udfs) {
 		
 UDF.getLatest = function(cb, total) {
 	if(!total) total=5;
-	//TODO: fixme
-	console.log("FIX ME I DONT FILTER");
 	//use cached version
 	if(locals["latestUDFs"+total]) {
 		cb(locals["latestUDFs"+total]);
 	} else {
-		UDF.find().sort({lastUpdated:-1}).limit(total).exec(function(err, results) {
+		UDF.find({released:true}).sort({lastUpdated:-1}).limit(total).exec(function(err, results) {
 			locals["latestUDFs"+total] = results;
 			cb(results);
 		});

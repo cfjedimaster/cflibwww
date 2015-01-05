@@ -64,15 +64,7 @@
 </tr>
 <tr>
 	<td colspan="2"><b>Arguments:</b><br/>
-	<!--
-	<TABLE WIDTH="100%">
-	<TR>
-		<TD><B>Arg Name</B></TD>
-		<TD><B>Desc</B></TD>
-		<TD><B>Required</B></TD>
-	</TR>
-	</TABLE>
-	-->
+	<i>Example: [{"NAME":"file","DESC":"file to foo","REQ":true}]</i><br/>
 	<textarea name="args" cols="50" rows="6">{{stringify udf.args}}</textarea>
 	</td>
 </tr>
@@ -104,6 +96,20 @@
 </tr>
 <tr>
     <td colspan="2"><b>JavaDoc:</b><br/>
+	<i>Sample:</i><br/>
+<pre><code>
+/**
+ * Month number to three character month text abbreviation.
+ * v0.9 by Craig Heath
+ * v1.0 by Adam Cameron (improved/simplified logic, made locale-aware)
+ * 
+ * @param monthNum 	 The month (1-12) (Required)
+ * @return Returns a locale-specific string representation of the month formatted with mask mmm 
+ * @author Craig Heath (cf.contractor@gmail.com) 
+ * @version 1.0, February 7, 2013 
+ */
+</code></pre>
+
     <textarea name="javadoc" cols="50" rows="20">{{udf.javaDoc}}</textarea>
     </td>
 </tr>
@@ -117,6 +123,7 @@
     <td><b>Released:</b></td>
 	<td>
 	<select name="released">
+	<option>--</option>
 	<option value="1" {{selected 1 udf.released}}>Yes</option>
 	<option value="0" {{selected 0 udf.released}}>No</option>
     </select>
@@ -126,6 +133,7 @@
     <td><b>Rejected:</b></td>
     <td>
     <select name="rejected">
+	<option>--</option>
     <option value="1" {{selected 1 udf.rejected}}>Yes</option>
     <option value="0" {{selected 0 udf.rejected}}>No</option>
     </select>
@@ -138,3 +146,7 @@
 </table>
 <input type="submit" value="Save UDF">
 </form>
+<br/><br/>
+<p>
+<a href="/admin">[Admin]</a>
+</p>
