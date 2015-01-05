@@ -1,5 +1,5 @@
 module.exports = {
 	adminusername:'admin',
-	adminpassword:'xomax9099',
+	adminpassword:'password',
 	cookieSecret:'jhjhfg9843908342890'
 }
