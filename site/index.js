@@ -298,7 +298,7 @@ function authenticate(username, password) {
 }
 
 function secure(req, res, next) {
-    if(1 || req.session.loggedin) {
+    if(req.session.loggedin) {
         next();   
     } else {
         res.redirect('/login');
