@@ -8,7 +8,126 @@
 #editForm textarea {
 	width: 600px;
 }
+#editForm input.small {
+	width: 150px;
+}
 </style>
+<script>
+$(document).ready(function() {
+
+	$("#copyToArgTable").on("click", function(e) {
+		e.preventDefault();
+		
+		//Ok, copy from JSON packet to table
+		var json = $.trim($("textarea[name=args]").val());
+		if(json.length === 0) {
+			alert("No data to copy, dummy.");
+			return;
+		};
+		
+		var data = JSON.parse(json);
+		for(var i=0;i<data.length; i++) {
+			var arg = data[i];
+			$("#name"+i).val(arg.NAME);
+			$("#desc"+i).val(arg.DESC);
+			var cb = $("#req"+i);
+			if(arg.REQ) {
+				cb.prop("checked",true);
+			} else {
+				cb.prop("checked", false);
+			}
+		}
+	});
+
+	$("#copyFromArgTable").on("click", function(e) {
+		e.preventDefault();
+		var data = [];
+		
+		for(var i=0;i<10; i++) {
+			var arg = {};
+			var $name = $("#name"+i);
+			var $desc = $("#desc"+i);
+			var $req = $("#req"+i);
+			if($name.val() != '') {
+				arg.NAME = $name.val();
+				arg.DESC = $desc.val();
+				if($req.prop("checked")) {
+					arg.REQ = 1;
+				} else {
+					arg.REQ = 0;
+				}
+				data.push(arg);
+			}
+		}
+		$("textarea[name=args]").val(JSON.stringify(data));
+		
+	});
+	
+	$("#generateJavaDoc").on("click", function(e) {
+		e.preventDefault();
+		//tag based?
+		var tagBased = $("input[name=tagbased]").prop("checked");
+		console.log("tagBased",tagBased);
+		var short = $("textarea[name=shortdescription]").val();
+		var desc = $("textarea[name=description]").val();
+		var headerComments = $("textarea[name=headercomments]").val();
+		var args = $("textarea[name=args]").val();
+		var returnVal = $("input[name=returnvalue]").val();
+		var author = $("input[name=author]").val();
+		var authorEmail = $("input[name=authoremail]").val();
+		var version = $("input[name=version]").val();
+		var now = new Date();
+		var dateStr = (now.getMonth()+1)+'/'+(now.getDate())+'/'+(now.getFullYear());
+		
+		if(!tagBased) {
+			var jd = "/**\n * "+short+"\n";
+			if(headerComments.length > 0) {
+				var lines = headerComments.split(/\n/);
+				for(var i=0; i<lines.length; i++) {
+					jd += " * " + lines[i] + "\n";
+				}
+			}
+			jd += " * \n";
+			if(args.length) {
+				var argData = JSON.parse(args);
+				for(var i=0; i<argData.length; i++) {
+					jd += " * @param "+argData[i].NAME + " " + argData[i].DESC;
+					if(argData[i].REQ) jd+=" (Required)";
+					else jd+=" (Optional)";
+					jd += "\n";
+				}
+			}
+			if(returnVal.length) jd+= " * @return "+returnVal + "\n";
+			jd += " * @author "+author + " ("+authorEmail+")\n";
+			jd += " * @version "+version+", " + dateStr + "\n";
+			jd += " */";
+		} else {
+			var jd = "<!---\n "+short+"\n";
+			if(headerComments.length > 0) {
+				jd += headerComments + "\n";
+			}			
+			jd += "\n";
+			if(args.length) {
+				var argData = JSON.parse(args);
+				for(var i=0; i<argData.length; i++) {
+					jd += "@param "+argData[i].NAME + " " + argData[i].DESC;
+					if(argData[i].REQ) jd+=" (Required)";
+					else jd+=" (Optional)";
+					jd += "\n";
+				}
+			}			
+			if(returnVal.length) jd+= "@return "+returnVal + "\n";
+			jd += "@author "+author + " ("+authorEmail+")\n";
+			jd += "@version "+version+", " + dateStr + "\n";
+			jd += "--->\n";
+
+		}
+		
+		$("textarea[name=javadoc]").val(jd);
+	});
+	
+});
+</script>
 
 <h1>Edit {{udf.name}}</h1>
 
@@ -64,6 +183,20 @@
 </tr>
 <tr>
 	<td colspan="2"><b>Arguments:</b><br/>
+	<!-- to allow for quick read/de -->
+	<table>
+		{{#times 10}}
+		<tr>
+			<td>Name:</td><td><input type="text" id="name{{this}}" class="small"></td>
+			<td>Desc:</td><td><input type="text" id="desc{{this}}" class="small"></td>
+			<td>Req:</td><td><input type="checkbox" id="req{{this}}" class="small"></td>
+		</tr>
+		{{/times}}
+	</table>
+	<p/>
+	<p>
+		<button id="copyFromArgTable">Copy from Table</button> / <button id="copyToArgTable">Copy To Table</button>
+	</p>
 	<i>Example: [{"NAME":"file","DESC":"file to foo","REQ":true}]</i><br/>
 	<textarea name="args" cols="50" rows="6">{{stringify udf.args}}</textarea>
 	</td>
@@ -96,6 +229,7 @@
 </tr>
 <tr>
     <td colspan="2"><b>JavaDoc:</b><br/>
+	<button id="generateJavaDoc">Generate JavaDoc automatically</button><p>
 	<i>Sample:</i><br/>
 <pre><code>
 /**

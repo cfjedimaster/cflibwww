@@ -93,7 +93,6 @@ UDF.search = function(keyword,status,cb) {
 	}
 	console.dir(filters);
 	UDF.find(filters).sort({lname:1}).exec(function(err, results) {
-		console.dir(results.length);
 		cb(err, results);
 	});
 };

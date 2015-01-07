@@ -50,7 +50,6 @@ var moment = require('moment');
 var RSS = require('rss');
 app.set('rssXML', '');
 
-
 var Library = require('./models/library.js');
 var UDF = require('./models/udf.js');
 
@@ -95,6 +94,13 @@ var handlebars = require('express-handlebars').create({
 		},
 		stringify:function(v) {
 			return JSON.stringify(v);
+		},
+		times:function(n, block) {
+			//credit: http://stackoverflow.com/a/11924998/52160
+			var accum = '';
+			for(var i = 0; i < n; ++i)
+				accum += block.fn(i);
+			return accum;
 		},
 		truncate:function(s) {
 			if(s.length < 17) return s;
@@ -254,9 +260,10 @@ app.get('/submit', function(req, res) {
 });
 
 app.get('/rss', function(req, res) {
-	//Do we have a cache for xml?
-	if(app.get('rssXML') != '') {
-		console.log('from cache in index.js ');
+	//no cache flag
+	var useCache = req.url.indexOf('cache') === -1;
+	
+	if(useCache && app.get('rssXML') != '') {
 		res.set('Content-Type','application/rss+xml');
 		res.send(app.get('rssXML'));
 	} else {

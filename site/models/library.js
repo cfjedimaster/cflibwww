@@ -48,7 +48,6 @@ librarySchema.statics.getAll = function(cb) {
 	if(locals["libraryCache"]) {
 		cb(null, locals["libraryCache"]);
 	} else {
-		console.log('doing getall');
 		this.find().sort({name:1}).exec(function(err, libs) {
 			async.map(libs, getUDFCount, function(err, result) {
 				for(var i=0, len=libs.length; i<len; i++) {
